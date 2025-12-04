@@ -51,6 +51,10 @@ export function HomeScreen({ navigation }: Props) {
     return collectedData.filter(item => item.type === type).length;
   };
 
+  const handleStatCardPress = (filterType: 'all' | 'geopoint' | 'geotrace' | 'geoshape') => {
+    navigation.navigate('DataList', { filterType });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -59,22 +63,34 @@ export function HomeScreen({ navigation }: Props) {
       </View>
 
       <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
+        <TouchableOpacity 
+          style={styles.statCard}
+          onPress={() => handleStatCardPress('all')}
+        >
           <Text style={styles.statNumber}>{collectedData.length}</Text>
           <Text style={styles.statLabel}>Total Items</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{getDataCountByType('geopoint')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.statCard}
+          onPress={() => handleStatCardPress('geopoint')}
+        >
+          <Text style={[styles.statNumber, { color: '#4CAF50' }]}>{getDataCountByType('geopoint')}</Text>
           <Text style={styles.statLabel}>Points</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{getDataCountByType('geotrace')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.statCard}
+          onPress={() => handleStatCardPress('geotrace')}
+        >
+          <Text style={[styles.statNumber, { color: '#FF9800' }]}>{getDataCountByType('geotrace')}</Text>
           <Text style={styles.statLabel}>Traces</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{getDataCountByType('geoshape')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.statCard}
+          onPress={() => handleStatCardPress('geoshape')}
+        >
+          <Text style={[styles.statNumber, { color: '#9C27B0' }]}>{getDataCountByType('geoshape')}</Text>
           <Text style={styles.statLabel}>Shapes</Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.captureSection}>

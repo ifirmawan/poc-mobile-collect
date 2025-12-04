@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomeScreen, GeoPointScreen, GeoTraceScreen, GeoShapeScreen } from '../screens';
+import { HomeScreen, GeoPointScreen, GeoTraceScreen, GeoShapeScreen, DataListScreen, MapViewScreen } from '../screens';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -56,6 +56,20 @@ export function AppNavigator() {
             headerStyle: {
               backgroundColor: '#9C27B0',
             },
+          }}
+        />
+        <Stack.Screen
+          name="DataList"
+          component={DataListScreen}
+          options={{
+            title: 'Collected Data',
+          }}
+        />
+        <Stack.Screen
+          name="MapView"
+          component={MapViewScreen}
+          options={{
+            title: 'Map View',
           }}
         />
       </Stack.Navigator>
