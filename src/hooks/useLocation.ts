@@ -122,6 +122,8 @@ export function useLocationTracking(): UseLocationTrackingReturn {
       }
 
       setIsTracking(true);
+      // Clear previous coordinates when starting a new tracking session
+      // Users should save their trace/shape before starting a new one
       setCoordinates([]);
 
       subscriptionRef.current = await Location.watchPositionAsync(

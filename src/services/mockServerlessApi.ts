@@ -68,9 +68,12 @@ export const MockServerlessAPI = {
     try {
       await simulateNetwork();
 
+      // Deep copy items to avoid unintended mutations of nested objects
+      const deepCopiedItems = JSON.parse(JSON.stringify(items)) as GeoData[];
+
       const collection: GeoDataCollection = {
         id: uuidv4(),
-        items: items.map(item => ({ ...item })), // Deep copy
+        items: deepCopiedItems,
         submittedAt: new Date().toISOString(),
         status: 'submitted',
       };
