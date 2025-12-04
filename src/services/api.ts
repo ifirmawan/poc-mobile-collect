@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { GeoData, GeoDataCollection, ApiResponse } from '../types';
+import { v4options } from '../utils/uuid';
 
 // Mock API base URL - in a real app, this would be an environment variable
 const API_BASE_URL = 'https://api.poc-mobile-collect.mock';
@@ -26,7 +27,7 @@ export const ApiService = {
 
     try {
       const collection: GeoDataCollection = {
-        id: uuidv4(),
+        id: uuidv4(v4options),
         items,
         submittedAt: new Date().toISOString(),
         status: 'submitted',

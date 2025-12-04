@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useCallback, ReactNode } 
 import { v4 as uuidv4 } from 'uuid';
 import { GeoData, GeoPoint, GeoTrace, GeoShape, Coordinate } from '../types';
 import { ApiService } from '../services/api';
+import { v4options } from '../utils/uuid';
 
 interface GeoDataState {
   collectedData: GeoData[];
@@ -32,7 +33,7 @@ function geoDataReducer(state: GeoDataState, action: GeoDataAction): GeoDataStat
   switch (action.type) {
     case 'ADD_GEOPOINT': {
       const newGeoPoint: GeoPoint = {
-        id: uuidv4(),
+        id: uuidv4(v4options),
         type: 'geopoint',
         coordinate: action.payload.coordinate,
         name: action.payload.name,
@@ -46,7 +47,7 @@ function geoDataReducer(state: GeoDataState, action: GeoDataAction): GeoDataStat
     }
     case 'ADD_GEOTRACE': {
       const newGeoTrace: GeoTrace = {
-        id: uuidv4(),
+        id: uuidv4(v4options),
         type: 'geotrace',
         coordinates: action.payload.coordinates,
         name: action.payload.name,
@@ -60,7 +61,7 @@ function geoDataReducer(state: GeoDataState, action: GeoDataAction): GeoDataStat
     }
     case 'ADD_GEOSHAPE': {
       const newGeoShape: GeoShape = {
-        id: uuidv4(),
+        id: uuidv4(v4options),
         type: 'geoshape',
         coordinates: action.payload.coordinates,
         name: action.payload.name,

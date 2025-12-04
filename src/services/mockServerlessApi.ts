@@ -15,6 +15,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { GeoData, GeoDataCollection, ApiResponse } from '../types';
+import { v4options } from '../utils/uuid';
 
 // Simulated database storage
 interface MockDatabase {
@@ -72,7 +73,7 @@ export const MockServerlessAPI = {
       const deepCopiedItems = JSON.parse(JSON.stringify(items)) as GeoData[];
 
       const collection: GeoDataCollection = {
-        id: uuidv4(),
+        id: uuidv4(v4options),
         items: deepCopiedItems,
         submittedAt: new Date().toISOString(),
         status: 'submitted',
