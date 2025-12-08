@@ -1,0 +1,6029 @@
+openapi: 3.0.3
+info:
+  title: IWSIMS
+  version: 1.0.0 (v1)
+paths:
+  /api/v1/levels:
+    get:
+      operationId: v1_levels_list
+      summary: Get list of levels
+      tags:
+      - Administration
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListLevel'
+          description: ''
+  /api/v1/administration/{administration_id}:
+    get:
+      operationId: v1_administration_retrieve
+      summary: Get list of administration
+      parameters:
+      - in: path
+        name: administration_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: query
+        name: filter
+        schema:
+          type: number
+      - in: query
+        name: filter_children
+        schema:
+          type: array
+          items:
+            type: number
+      - in: query
+        name: max_level
+        schema:
+          type: number
+      tags:
+      - Administration
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAdministration'
+          description: ''
+  /api/v1/profile:
+    get:
+      operationId: v1_profile_retrieve
+      summary: Get user details from token
+      tags:
+      - Auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/login:
+    post:
+      operationId: v1_login_create
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/users:
+    get:
+      operationId: v1_users_retrieve
+      summary: Get list of users
+      parameters:
+      - in: query
+        name: administration
+        schema:
+          type: number
+      - in: query
+        name: organisation
+        schema:
+          type: number
+      - in: query
+        name: page
+        schema:
+          type: number
+        required: true
+      - in: query
+        name: pending
+        schema:
+          type: boolean
+      - in: query
+        name: role
+        schema:
+          type: number
+      - in: query
+        name: search
+        schema:
+          type: string
+      - in: query
+        name: trained
+        schema:
+          type: boolean
+      tags:
+      - User
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+          description: ''
+  /api/v1/user/{user_id}:
+    get:
+      operationId: v1_user_retrieve
+      summary: To get user details
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - User
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+        '204':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+    put:
+      operationId: v1_user_update
+      description: Role Choice are SuperAdmin:1,Admin:2,User:4
+      summary: To update user
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddEditUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddEditUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddEditUserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+    delete:
+      operationId: v1_user_destroy
+      summary: To delete user
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - User
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Deletion with no response
+  /api/v1/user/forgot-password:
+    post:
+      operationId: v1_user_forgot_password_create
+      summary: To send reset password instructions
+      tags:
+      - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/user/set-password:
+    put:
+      operationId: v1_user_set_password_update
+      summary: To set user's password
+      tags:
+      - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetUserPasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SetUserPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SetUserPasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/user/roles:
+    get:
+      operationId: v1_user_roles_list
+      summary: Get list of roles
+      tags:
+      - User
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoleOption'
+          description: ''
+  /api/v1/user:
+    post:
+      operationId: v1_user_create
+      description: Role Choice are SuperAdmin:1,Admin:2
+      summary: To add user
+      tags:
+      - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddEditUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddEditUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddEditUserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/invitation/{invitation_id}:
+    get:
+      operationId: v1_invitation_retrieve
+      summary: To verify invitation code
+      parameters:
+      - in: path
+        name: invitation_id
+        schema:
+          type: string
+          pattern: ^.*$
+        required: true
+      tags:
+      - User
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/organisations:
+    get:
+      operationId: v1_organisations_list
+      summary: Get list of organisation
+      parameters:
+      - in: query
+        name: attributes
+        schema:
+          type: number
+      - in: query
+        name: id
+        schema:
+          type: number
+      - in: query
+        name: search
+        schema:
+          type: string
+      tags:
+      - Organisation
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganisationList'
+          description: ''
+  /api/v1/organisation/options/{selected_id}:
+    get:
+      operationId: v1_organisation_options_retrieve
+      summary: Get list of organisations for webform options
+      parameters:
+      - in: query
+        name: attribute
+        schema:
+          type: number
+          enum:
+          - 1
+          - 2
+        required: true
+      - in: path
+        name: selected_id
+        schema:
+          type: number
+        description: ID of the selected organization (optional)
+        required: true
+      tags:
+      - Organisation
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganisationAttributeChildren'
+          description: ''
+  /api/v1/organisation/{organisation_id}:
+    get:
+      operationId: v1_organisation_retrieve
+      summary: To get organisation details
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Organisation
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganisationList'
+          description: ''
+    put:
+      operationId: v1_organisation_update
+      description: Attributes are member:1,partnership:2
+      summary: To update organisation
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Organisation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddEditOrganisationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddEditOrganisationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddEditOrganisationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+    delete:
+      operationId: v1_organisation_destroy
+      summary: To delete organisation
+      parameters:
+      - in: path
+        name: organisation_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Organisation
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Deletion with no response
+  /api/v1/organisation:
+    post:
+      operationId: v1_organisation_create
+      description: Attributes are member:1,partnership:2
+      summary: To add new organisation
+      tags:
+      - Organisation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddEditOrganisationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddEditOrganisationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddEditOrganisationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/entity-data/{entity_id}/list/{administration_id}:
+    get:
+      operationId: v1_entity_data_list_retrieve
+      summary: Get list of entity data by entity type & administration
+      parameters:
+      - in: path
+        name: administration_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: path
+        name: entity_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Entities
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEntityData'
+          description: ''
+  /api/v1/update-profile:
+    put:
+      operationId: v1_update_profile_update
+      summary: To update user profile
+      tags:
+      - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/roles:
+    get:
+      operationId: v1_roles_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRoleDetailList'
+          description: ''
+    post:
+      operationId: v1_roles_create
+      tags:
+      - Roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+  /api/v1/role/{id}:
+    delete:
+      operationId: v1_role_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+    put:
+      operationId: v1_role_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    get:
+      operationId: v1_role_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleDetail'
+          description: ''
+  /api/v1/export/administrations-template:
+    get:
+      operationId: v1_export_administrations_template_retrieve
+      summary: Export template for Administration bulk upload
+      parameters:
+      - in: query
+        name: attributes
+        schema:
+          type: array
+          items:
+            type: number
+        explode: false
+      tags:
+      - File
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/export/prefilled-administrations-template:
+    get:
+      operationId: v1_export_prefilled_administrations_template_retrieve
+      summary: Export prefilled template for Administration bulk upload
+      parameters:
+      - in: query
+        name: attributes
+        schema:
+          type: array
+          items:
+            type: number
+        explode: false
+      - in: query
+        name: level
+        schema:
+          type: number
+      tags:
+      - File
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/export/entity-data-template:
+    get:
+      operationId: v1_export_entity_data_template_retrieve
+      summary: Export template for Entities data bulk upload
+      parameters:
+      - in: query
+        name: entity_types
+        schema:
+          type: array
+          items:
+            type: number
+        required: true
+        explode: false
+      tags:
+      - File
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/export/prefilled-entity-data-template:
+    get:
+      operationId: v1_export_prefilled_entity_data_template_retrieve
+      summary: Export entity data with prefilled administrative list
+      parameters:
+      - in: query
+        name: adm_id
+        schema:
+          type: number
+      - in: query
+        name: entity_ids
+        schema:
+          type: array
+          items:
+            type: number
+        explode: false
+      tags:
+      - File
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/export/entity-data:
+    get:
+      operationId: v1_export_entity_data_retrieve
+      summary: Export entity data
+      parameters:
+      - in: query
+        name: adm_id
+        schema:
+          type: number
+      - in: query
+        name: entity_ids
+        schema:
+          type: array
+          items:
+            type: number
+        explode: false
+      tags:
+      - File
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/administration-attributes/{id}:
+    delete:
+      operationId: v1_administration_attributes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Administration
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+    put:
+      operationId: v1_administration_attributes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Administration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdministrationAttributeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdministrationAttributeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdministrationAttributeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdministrationAttribute'
+          description: ''
+  /api/v1/administration-attributes:
+    get:
+      operationId: v1_administration_attributes_list
+      tags:
+      - Administration
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdministrationAttribute'
+          description: ''
+    post:
+      operationId: v1_administration_attributes_create
+      tags:
+      - Administration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdministrationAttributeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdministrationAttributeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdministrationAttributeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdministrationAttribute'
+          description: ''
+  /api/v1/administrations/{id}:
+    delete:
+      operationId: v1_administrations_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Administration
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+    put:
+      operationId: v1_administrations_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Administration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdministrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdministrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdministrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Administration'
+          description: ''
+    get:
+      operationId: v1_administrations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Administration
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Administration'
+          description: ''
+  /api/v1/administrations:
+    get:
+      operationId: v1_administrations_list
+      parameters:
+      - in: query
+        name: level
+        schema:
+          type: number
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: parent
+        schema:
+          type: number
+      - in: query
+        name: search
+        schema:
+          type: string
+      tags:
+      - Administration
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdministrationList'
+          description: ''
+    post:
+      operationId: v1_administrations_create
+      tags:
+      - Administration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdministrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdministrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdministrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Administration'
+          description: ''
+  /api/v1/entity-data/{id}:
+    delete:
+      operationId: v1_entity_data_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Entities
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+    put:
+      operationId: v1_entity_data_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Entities
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntityDataRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntityDataRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntityDataRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityData'
+          description: ''
+    get:
+      operationId: v1_entity_data_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Entities
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityData'
+          description: ''
+  /api/v1/entity-data:
+    get:
+      operationId: v1_entity_data_list
+      parameters:
+      - in: query
+        name: administration
+        schema:
+          type: number
+      - in: query
+        name: entity
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+      tags:
+      - Entities
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEntityDataList'
+          description: ''
+    post:
+      operationId: v1_entity_data_create
+      tags:
+      - Entities
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntityDataRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntityDataRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntityDataRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityData'
+          description: ''
+  /api/v1/entities/{id}:
+    delete:
+      operationId: v1_entities_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Entities
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+    put:
+      operationId: v1_entities_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Entities
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntityRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntityRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntityRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+          description: ''
+    get:
+      operationId: v1_entities_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Entities
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+          description: ''
+  /api/v1/entities:
+    get:
+      operationId: v1_entities_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - Entities
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEntityList'
+          description: ''
+    post:
+      operationId: v1_entities_create
+      tags:
+      - Entities
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntityRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntityRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntityRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+          description: ''
+  /api/v1/feedback:
+    post:
+      operationId: v1_feedback_create
+      description: Send feedback
+      summary: Send feedback
+      tags:
+      - Feedback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchUserCommentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchUserCommentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchUserCommentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/forms:
+    get:
+      operationId: v1_forms_list
+      description: To get list of forms
+      summary: To get list of forms
+      tags:
+      - Form
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListForm'
+          description: ''
+  /api/v1/form/{form_id}:
+    get:
+      operationId: v1_form_retrieve
+      summary: To get form data
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Form
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormData'
+          description: ''
+  /api/v1/form/web/{form_id}:
+    get:
+      operationId: v1_form_web_retrieve
+      summary: To get form in webform format
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Form
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebFormDetail'
+          description: ''
+  /api/v1/form/approver:
+    get:
+      operationId: v1_form_approver_list
+      summary: To get approver user list
+      parameters:
+      - in: query
+        name: administration_id
+        schema:
+          type: number
+        required: true
+      - in: query
+        name: form_id
+        schema:
+          type: number
+        required: true
+      tags:
+      - Form
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormApproverResponse'
+          description: ''
+  /api/v1/form/check-approver/{form_id}:
+    get:
+      operationId: v1_form_check_approver_retrieve
+      summary: To check approver for defined form_id & logged in user
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Form
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckFormApprover'
+          description: ''
+  /api/v1/form-data/{form_id}:
+    get:
+      operationId: v1_form_data_retrieve
+      summary: To get list of form data
+      parameters:
+      - in: query
+        name: administration
+        schema:
+          type: number
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: number
+        required: true
+      - in: query
+        name: parent
+        schema:
+          type: string
+      tags:
+      - Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataList'
+          description: ''
+    post:
+      operationId: v1_form_data_create
+      summary: Submit form data
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitFormRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubmitFormRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubmitFormRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+    put:
+      operationId: v1_form_data_update
+      summary: Edit form data
+      parameters:
+      - in: query
+        name: data_id
+        schema:
+          type: number
+        required: true
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SubmitFormDataAnswerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SubmitFormDataAnswerRequest'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SubmitFormDataAnswerRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/data/{data_id}:
+    get:
+      operationId: v1_data_list
+      summary: To get answers for form data
+      parameters:
+      - in: path
+        name: data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListDataAnswer'
+          description: ''
+    delete:
+      operationId: v1_data_destroy
+      summary: Delete datapoint include answer & history
+      parameters:
+      - in: path
+        name: data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Deletion with no response
+  /api/v1/form-pending-data/{form_id}:
+    get:
+      operationId: v1_form_pending_data_retrieve
+      summary: To get list of pending form data
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: number
+        required: true
+      - in: query
+        name: selection_ids
+        schema:
+          type: array
+          items:
+            type: number
+      tags:
+      - Pending Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PendingDataListResponse'
+          description: ''
+    post:
+      operationId: v1_form_pending_data_create
+      summary: Submit pending form data
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Pending Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPendingFormRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubmitPendingFormRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubmitPendingFormRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+    put:
+      operationId: v1_form_pending_data_update
+      summary: Edit pending form data
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: query
+        name: pending_data_id
+        schema:
+          type: number
+        required: true
+      tags:
+      - Pending Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SubmitFormDataAnswerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SubmitFormDataAnswerRequest'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SubmitFormDataAnswerRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/draft-submissions/{form_id}:
+    get:
+      operationId: v1_draft_submissions_retrieve
+      summary: To get list of draft form data
+      parameters:
+      - in: query
+        name: administration
+        schema:
+          type: number
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: number
+      - in: query
+        name: search
+        schema:
+          type: string
+      tags:
+      - Draft Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DraftDataListResponse'
+          description: ''
+    post:
+      operationId: v1_draft_submissions_create
+      summary: Submit draft form data
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Draft Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPendingFormRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubmitPendingFormRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubmitPendingFormRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/draft-submission/{data_id}:
+    get:
+      operationId: v1_draft_submission_retrieve
+      summary: Get draft form data by ID
+      parameters:
+      - in: path
+        name: data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Draft Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormData'
+          description: ''
+    put:
+      operationId: v1_draft_submission_update
+      summary: Edit draft form data
+      parameters:
+      - in: path
+        name: data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Draft Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitUpdateDraftFormRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubmitUpdateDraftFormRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubmitUpdateDraftFormRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+    delete:
+      operationId: v1_draft_submission_destroy
+      summary: Delete draft form data
+      parameters:
+      - in: path
+        name: data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Draft Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Deletion with no response
+  /api/v1/publish-draft-submission/{data_id}:
+    post:
+      operationId: v1_publish_draft_submission_create
+      summary: Publish draft form data
+      parameters:
+      - in: path
+        name: data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Draft Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/data-details/{data_id}:
+    get:
+      operationId: v1_data_details_retrieve
+      summary: To get data by ID
+      parameters:
+      - in: path
+        name: data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormData'
+          description: ''
+    delete:
+      operationId: v1_data_details_destroy
+      summary: To delete data
+      parameters:
+      - in: path
+        name: data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Deletion with no response
+  /api/v1/pending-data/{pending_data_id}:
+    get:
+      operationId: v1_pending_data_list
+      summary: To get list of answers for pending data
+      parameters:
+      - in: path
+        name: pending_data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Pending Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListPendingDataAnswer'
+          description: ''
+    delete:
+      operationId: v1_pending_data_destroy
+      summary: To delete pending data
+      parameters:
+      - in: path
+        name: pending_data_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Pending Data
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Deletion with no response
+  /api/v1/export/form/{form_id}:
+    get:
+      operationId: v1_export_form_retrieve
+      summary: Export Form data
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - File
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/health/check:
+    get:
+      operationId: v1_health_check_retrieve
+      description: Use to check System health
+      tags:
+      - Dev
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/config.js:
+    get:
+      operationId: v1_config.js_retrieve
+      description: Get required configuration
+      tags:
+      - Dev
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/email_template:
+    get:
+      operationId: v1_email_template_retrieve
+      description: Use to show email templates
+      summary: To show email template by type
+      parameters:
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - administration_prefilled
+          - administration_upload
+          - batch_approval
+          - batch_rejection
+          - data_approval
+          - data_rejection
+          - feedback
+          - inform_batch_rejection_approver
+          - new_request
+          - pending_approval
+          - unchanged_data
+          - upload_error
+          - user_approval
+          - user_forgot_password
+          - user_invite
+          - user_register
+          - user_update
+      tags:
+      - Dev
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+          description: HTML email template
+  /api/v1/form-pending-batch:
+    get:
+      operationId: v1_form_pending_batch_retrieve
+      summary: To get list of pending batch
+      parameters:
+      - in: query
+        name: approved
+        schema:
+          type: boolean
+          default: false
+      - in: query
+        name: page
+        schema:
+          type: number
+        required: true
+      - in: query
+        name: subordinate
+        schema:
+          type: boolean
+          default: false
+      tags:
+      - Pending Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataBatchResponse'
+          description: ''
+  /api/v1/form-pending-data-batch/{batch_id}:
+    get:
+      operationId: v1_form_pending_data_batch_list
+      summary: To get list of pending data by batch
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Pending Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListPendingFormData'
+          description: ''
+  /api/v1/pending-data/approve:
+    post:
+      operationId: v1_pending_data_approve_create
+      summary: Approve pending data
+      tags:
+      - Pending Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveDataRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ApproveDataRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ApproveDataRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/batch/attachments/{batch_id}:
+    get:
+      operationId: v1_batch_attachments_list
+      summary: To get batch attachments
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Batch Attachments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BatchAttachments'
+          description: ''
+    post:
+      operationId: v1_batch_attachments_create
+      summary: To create batch attachments
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Batch Attachments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchAttachmentsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchAttachmentsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchAttachmentsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/batch/attachment/{attachment_id}:
+    delete:
+      operationId: v1_batch_attachment_destroy
+      summary: To delete batch attachment
+      parameters:
+      - in: path
+        name: attachment_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Batch Attachments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/batch/attachment/{attachment_id}/edit:
+    post:
+      operationId: v1_batch_attachment_edit_create
+      summary: To update batch attachments
+      parameters:
+      - in: path
+        name: attachment_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Batch Attachments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchAttachmentsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchAttachmentsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchAttachmentsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchAttachments'
+          description: ''
+  /api/v1/batch/comment/{batch_id}:
+    get:
+      operationId: v1_batch_comment_list
+      summary: To get batch comment
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Pending Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListBatchComment'
+          description: ''
+  /api/v1/batch/summary/{batch_id}:
+    get:
+      operationId: v1_batch_summary_list
+      summary: To get batch summary
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Pending Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListBatchSummary'
+          description: ''
+  /api/v1/batch:
+    get:
+      operationId: v1_batch_retrieve
+      summary: To get list of batch
+      parameters:
+      - in: query
+        name: approved
+        schema:
+          type: boolean
+          default: false
+      - in: query
+        name: form
+        schema:
+          type: number
+      - in: query
+        name: page
+        schema:
+          type: number
+        required: true
+      tags:
+      - Pending Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDataBatchResponse'
+          description: ''
+    post:
+      operationId: v1_batch_create
+      summary: To create batch
+      tags:
+      - Pending Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateBatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateBatchRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/download/generate:
+    get:
+      operationId: v1_download_generate_retrieve
+      summary: To generate download
+      parameters:
+      - in: query
+        name: administration_id
+        schema:
+          type: number
+      - in: query
+        name: child_form_ids
+        schema:
+          type: array
+          items:
+            type: number
+      - in: query
+        name: form_id
+        schema:
+          type: number
+        required: true
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - all
+          - recent
+          default: recent
+      - in: query
+        name: use_label
+        schema:
+          type: boolean
+          default: false
+      tags:
+      - Job
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateDownload'
+          description: ''
+  /api/v1/download/status/{task_id}:
+    get:
+      operationId: v1_download_status_retrieve
+      description: To get the status of download
+      parameters:
+      - in: path
+        name: task_id
+        schema:
+          type: string
+          pattern: ^.*$
+        required: true
+      tags:
+      - Job
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadStatus'
+          description: ''
+  /api/v1/download/file/{file_name}:
+    get:
+      operationId: v1_download_file_retrieve
+      summary: Download file
+      parameters:
+      - in: path
+        name: file_name
+        schema:
+          type: string
+          pattern: ^.*$
+        required: true
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - download
+          - download_administration
+          - download_datapoint_report
+          - download_entities
+          - seed_data
+          - send_email
+          - validate_data
+        required: true
+      tags:
+      - Job
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/download/list:
+    get:
+      operationId: v1_download_list_list
+      summary: Download list
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: number
+        required: true
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - download
+          - download_administration
+          - download_datapoint_report
+          - download_entities
+          - seed_data
+          - send_email
+          - validate_data
+      tags:
+      - Job
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DownloadList'
+          description: ''
+  /api/v1/upload/excel/{form_id}:
+    post:
+      operationId: v1_upload_excel_create
+      summary: Upload Excel
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Job
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadExcelRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadExcel'
+          description: ''
+  /api/v1/upload/bulk-administrations:
+    post:
+      operationId: v1_upload_bulk_administrations_create
+      summary: Bulk Upload Administrations
+      tags:
+      - Job
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadExcelRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadExcel'
+          description: ''
+  /api/v1/upload/bulk-entities:
+    post:
+      operationId: v1_upload_bulk_entities_create
+      summary: Bulk Upload Entities
+      tags:
+      - Job
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadExcelRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadExcel'
+          description: ''
+  /api/v1/download/datapoint-report:
+    get:
+      operationId: v1_download_datapoint_report_retrieve
+      summary: Generate Datapoint Report
+      parameters:
+      - in: query
+        name: child_form_ids
+        schema:
+          type: array
+          items:
+            type: number
+      - in: query
+        name: form_id
+        schema:
+          type: number
+        required: true
+      - in: query
+        name: selection_ids
+        schema:
+          type: array
+          items:
+            type: number
+      tags:
+      - Job
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatapointReport'
+          description: ''
+  /api/v1/mobile-assignments/{id}:
+    delete:
+      operationId: v1_mobile_assignments_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Mobile Assignment
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+    put:
+      operationId: v1_mobile_assignments_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Mobile Assignment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MobileAssignmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MobileAssignmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MobileAssignmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileAssignment'
+          description: ''
+    get:
+      operationId: v1_mobile_assignments_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Mobile Assignment
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileAssignment'
+          description: ''
+  /api/v1/mobile-assignments:
+    get:
+      operationId: v1_mobile_assignments_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - Mobile Assignment
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMobileAssignmentList'
+          description: ''
+    post:
+      operationId: v1_mobile_assignments_create
+      tags:
+      - Mobile Assignment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MobileAssignmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MobileAssignmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MobileAssignmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileAssignment'
+          description: ''
+  /api/v1/device/auth:
+    post:
+      operationId: v1_device_auth_create
+      description: To get list of mobile forms
+      summary: To get list of mobile forms
+      tags:
+      - Mobile Device Form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MobileAssignmentFormsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MobileAssignmentFormsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MobileAssignmentFormsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileAssignmentForms'
+          description: ''
+  /api/v1/device/form/{form_id}:
+    get:
+      operationId: v1_device_form_retrieve
+      summary: To get form in mobile form format
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Mobile Device Form
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebFormDetail'
+          description: ''
+  /api/v1/device/sync:
+    post:
+      operationId: v1_device_sync_create
+      summary: Submit pending form data
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: number
+      - in: query
+        name: is_draft
+        schema:
+          type: boolean
+          default: false
+      - in: query
+        name: is_published
+        schema:
+          type: boolean
+          default: false
+      tags:
+      - Mobile Device Form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncDeviceFormDataRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SyncDeviceFormDataRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SyncDeviceFormDataRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+          description: ''
+  /api/v1/device/sqlite/{file_name}:
+    get:
+      operationId: v1_device_sqlite_retrieve
+      summary: Get SQLITE File
+      parameters:
+      - in: path
+        name: file_name
+        schema:
+          type: string
+          pattern: ^.*$
+        required: true
+      tags:
+      - Mobile Device Form
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/device/images:
+    post:
+      operationId: v1_device_images_create
+      summary: Upload Images from Device
+      tags:
+      - Mobile Device Form
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadImagesRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadImagesFromDevice'
+          description: ''
+  /api/v1/device/apk/upload:
+    post:
+      operationId: v1_device_apk_upload_create
+      summary: Post APK File
+      tags:
+      - Mobile APK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadAPKFileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UploadAPKFileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadAPKFileRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/device/apk/download:
+    get:
+      operationId: v1_device_apk_download_retrieve
+      summary: Get APK File
+      tags:
+      - Mobile APK
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/device/datapoint-list:
+    get:
+      operationId: v1_device_datapoint_list_retrieve
+      summary: GET Download List for Syncing Datapoints
+      tags:
+      - Mobile Device Form
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileDeviceDownloadDatapointListResponse'
+          description: ''
+  /api/v1/device/apk/version/{current_version}:
+    get:
+      operationId: v1_device_apk_version_retrieve
+      summary: Check APK Version
+      parameters:
+      - in: path
+        name: current_version
+        schema:
+          type: string
+          pattern: ^[^/]+$
+        required: true
+      tags:
+      - Mobile APK
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/device/attachments:
+    post:
+      operationId: v1_device_attachments_create
+      summary: Upload Attachments from Device
+      parameters:
+      - in: query
+        name: allowed_file_types
+        schema:
+          type: array
+          items:
+            type: string
+          enum:
+          - 3gp
+          - aac
+          - avi
+          - bmp
+          - csv
+          - doc
+          - docx
+          - flac
+          - flv
+          - gif
+          - jpeg
+          - jpg
+          - m4a
+          - mkv
+          - mov
+          - mp3
+          - mp4
+          - ogg
+          - opus
+          - pdf
+          - png
+          - ppt
+          - pptx
+          - rar
+          - txt
+          - wav
+          - webm
+          - wma
+          - wmv
+          - xls
+          - xlsx
+          - zip
+        description: 'List of allowed file types for the attachment. '
+      tags:
+      - Mobile Device Form
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttachmentsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadAttachmentsFromDevice'
+          description: ''
+  /api/v1/device/draft-list:
+    get:
+      operationId: v1_device_draft_list_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - Mobile Draft Form Data
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDraftFormDataList'
+          description: ''
+  /api/v1/upload/images:
+    post:
+      operationId: v1_upload_images_create
+      summary: Upload Images
+      tags:
+      - Files
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadImagesRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadImages'
+          description: ''
+  /api/v1/upload/attachments:
+    post:
+      operationId: v1_upload_attachments_create
+      description: Upload attachments to the server.
+      summary: Upload Attachments
+      parameters:
+      - in: query
+        name: allowed_file_types
+        schema:
+          type: array
+          items:
+            type: string
+          enum:
+          - 3gp
+          - aac
+          - avi
+          - bmp
+          - csv
+          - doc
+          - docx
+          - flac
+          - flv
+          - gif
+          - jpeg
+          - jpg
+          - m4a
+          - mkv
+          - mov
+          - mp3
+          - mp4
+          - ogg
+          - opus
+          - pdf
+          - png
+          - ppt
+          - pptx
+          - rar
+          - txt
+          - wav
+          - webm
+          - wma
+          - wmv
+          - xls
+          - xlsx
+          - zip
+        description: 'List of allowed file types for the attachment. '
+      - in: query
+        name: question_id
+        schema:
+          type: number
+      tags:
+      - Files
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttachmentsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadAttachments'
+          description: ''
+  /api/v1/visualization/monitoring-stats:
+    get:
+      operationId: v1_visualization_monitoring_stats_list
+      description: Get the statistic of on monitoring data
+      parameters:
+      - in: query
+        name: parent_id
+        schema:
+          type: number
+        description: The parent ID to filter FormData
+        required: true
+      - in: query
+        name: question_date
+        schema:
+          type: number
+        description: the question to extract the date from (optional)
+      - in: query
+        name: question_id
+        schema:
+          type: number
+        description: The question ID to extract the value from
+        required: true
+      tags:
+      - Visualization
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MonitoringStat'
+          description: ''
+  /api/v1/visualization/formdata-stats/{form_id}:
+    get:
+      operationId: v1_visualization_formdata_stats_list
+      description: Get the statistics of form data based ona specific monitoring form
+        ID and question ID.
+      parameters:
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      - in: query
+        name: question_id
+        schema:
+          type: number
+        description: The question ID to extract the value from
+        required: true
+      tags:
+      - Visualization
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormDataStat'
+          description: ''
+  /api/v1/maps/geolocation/{form_id}:
+    get:
+      operationId: v1_maps_geolocation_retrieve
+      summary: To get list of geolocations for a form
+      parameters:
+      - in: query
+        name: administration
+        schema:
+          type: number
+      - in: path
+        name: form_id
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+        required: true
+      tags:
+      - Maps
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoLocationList'
+          description: ''
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    AccessEnum:
+      enum:
+      - 1
+      type: integer
+    AddEditOrganisationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attributes3a3Enum'
+      required:
+      - attributes
+      - name
+    AddEditUserRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        organisation:
+          type: integer
+        trained:
+          type: boolean
+          default: false
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddRolesRequest'
+        phone_number:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 15
+        forms:
+          type: array
+          items:
+            type: integer
+        inform_user:
+          type: boolean
+          default: true
+        is_superuser:
+          type: boolean
+          default: false
+          description: Set user as superuser. Superuser can access all data.
+      required:
+      - email
+      - first_name
+      - last_name
+    AddRolesRequest:
+      type: object
+      properties:
+        role:
+          type: integer
+          description: Role to assign to user
+        administration:
+          type: integer
+          description: Administration to assign role to user
+      required:
+      - administration
+      - role
+    Administration:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        code:
+          type: string
+          nullable: true
+          maxLength: 255
+        path:
+          type: string
+          nullable: true
+        parent:
+          type: integer
+        level:
+          allOf:
+          - $ref: '#/components/schemas/AdministrationLevels'
+          readOnly: true
+        children:
+          type: array
+          items:
+            type: integer
+          readOnly: true
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdministrationAttributeValue'
+      required:
+      - children
+      - id
+      - level
+      - name
+      - parent
+    AdministrationAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/TypeB59Enum'
+        options:
+          type: array
+          items:
+            type: string
+            nullable: true
+            maxLength: 255
+      required:
+      - id
+      - name
+    AdministrationAttributeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        type:
+          $ref: '#/components/schemas/TypeB59Enum'
+        options:
+          type: array
+          items:
+            type: string
+            nullable: true
+            minLength: 1
+            maxLength: 255
+      required:
+      - name
+    AdministrationAttributeValue:
+      type: object
+      properties:
+        attribute:
+          type: integer
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeB59Enum'
+          readOnly: true
+        value:
+          type: object
+          additionalProperties: {}
+      required:
+      - attribute
+      - type
+    AdministrationAttributeValueRequest:
+      type: object
+      properties:
+        attribute:
+          type: integer
+        value:
+          type: object
+          additionalProperties: {}
+      required:
+      - attribute
+    AdministrationLevels:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+      required:
+      - id
+      - name
+    AdministrationLevelsRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+      required:
+      - name
+    AdministrationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        code:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 255
+        path:
+          type: string
+          nullable: true
+          minLength: 1
+        parent:
+          type: integer
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdministrationAttributeValueRequest'
+      required:
+      - name
+      - parent
+    AnswerHistory:
+      type: object
+      properties:
+        value:
+          type: number
+          format: float
+        created:
+          type: string
+        created_by:
+          type: string
+      required:
+      - created
+      - created_by
+      - value
+    ApproveDataRequestRequest:
+      type: object
+      properties:
+        approval:
+          type: integer
+        status:
+          $ref: '#/components/schemas/ApproveDataRequestStatusEnum'
+        comment:
+          type: string
+          minLength: 1
+      required:
+      - approval
+      - status
+    ApproveDataRequestStatusEnum:
+      enum:
+      - 2
+      - 3
+      type: integer
+    AttachmentsRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+      - file
+    Attributes3a3Enum:
+      enum:
+      - 1
+      - 2
+      type: integer
+    BatchApprover:
+      type: object
+      properties:
+        name:
+          type: string
+        administration:
+          type: string
+        status:
+          type: integer
+        status_text:
+          type: string
+      required:
+      - administration
+      - name
+      - status
+      - status_text
+    BatchAttachments:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+          nullable: true
+        file_path:
+          type: string
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created
+      - file_path
+      - id
+      - name
+    BatchAttachmentsRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          writeOnly: true
+          title: Attachment File
+          description: The file to be attached to the batch.
+        comment:
+          type: string
+          writeOnly: true
+          minLength: 1
+          description: Optional comment for the attachment.
+      required:
+      - file
+    BatchFile:
+      type: object
+      properties:
+        name:
+          type: string
+        file:
+          type: string
+          format: uri
+      required:
+      - file
+      - name
+    BatchUserComment:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+      required:
+      - email
+      - name
+    BatchUserCommentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
+      required:
+      - email
+      - message
+      - name
+    BlankEnum:
+      enum:
+      - ''
+    CascadeApiFormat:
+      type: object
+      properties:
+        endpoint:
+          type: string
+        list:
+          type: string
+        initial:
+          type: string
+        query_params:
+          type: string
+      required:
+      - endpoint
+      - initial
+      - list
+      - query_params
+    CategoryEnum:
+      enum:
+      - send_email
+      - validate_data
+      - seed_data
+      - download
+      - download_administration
+      - download_entities
+      - download_datapoint_report
+      type: string
+    CheckFormApprover:
+      type: object
+      properties:
+        count:
+          type: integer
+      required:
+      - count
+    CommonData:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required:
+      - id
+      - name
+    CreateBatchRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        comment:
+          type: string
+          minLength: 1
+        data:
+          type: array
+          items:
+            type: integer
+        files:
+          type: array
+          items:
+            type: string
+            format: binary
+      required:
+      - data
+      - name
+    DataBatchResponse:
+      type: object
+      properties:
+        current:
+          type: integer
+        total:
+          type: integer
+        total_page:
+          type: integer
+        batch:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListDataBatch'
+      required:
+      - batch
+      - current
+      - total
+      - total_page
+    DataList:
+      type: object
+      properties:
+        current:
+          type: integer
+        total:
+          type: integer
+        total_page:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListFormData'
+      required:
+      - current
+      - data
+      - total
+      - total_page
+    DatapointReport:
+      type: object
+      properties:
+        task_id:
+          type: string
+        file_url:
+          type: string
+      required:
+      - file_url
+      - task_id
+    DefaultResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    DependencyRuleEnum:
+      enum:
+      - AND
+      - OR
+      type: string
+    DownloadList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        task_id:
+          type: string
+          nullable: true
+          maxLength: 50
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeFbdEnum'
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusD0cEnum'
+          readOnly: true
+        form:
+          type: string
+          readOnly: true
+        category:
+          allOf:
+          - $ref: '#/components/schemas/CategoryEnum'
+          readOnly: true
+        administration:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date-time
+        result:
+          type: string
+          nullable: true
+        attributes:
+          readOnly: true
+        download_type:
+          type: string
+          readOnly: true
+      required:
+      - administration
+      - attributes
+      - category
+      - date
+      - download_type
+      - form
+      - id
+      - status
+      - type
+    DownloadStatus:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusD0cEnum'
+      required:
+      - status
+    DraftDataListResponse:
+      type: object
+      properties:
+        current:
+          type: integer
+        total:
+          type: integer
+        total_page:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListFormData'
+      required:
+      - current
+      - data
+      - total
+      - total_page
+    DraftFormData:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        uuid:
+          type: string
+          nullable: true
+          maxLength: 255
+        form:
+          type: integer
+        administration:
+          type: integer
+        datapoint_name:
+          type: string
+        geolocation:
+          type: array
+          items: {}
+          nullable: true
+        submittedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        duration:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        json:
+          type: string
+          readOnly: true
+          description: JSON representation of the answers.
+        repeats:
+          type: string
+          readOnly: true
+          description: Number of times the form has been repeated.
+      required:
+      - administration
+      - datapoint_name
+      - form
+      - id
+      - json
+      - repeats
+      - submittedAt
+    Entity:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+      required:
+      - id
+      - name
+    EntityData:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        code:
+          type: string
+          nullable: true
+          maxLength: 255
+        administration:
+          type: integer
+        entity:
+          type: integer
+      required:
+      - administration
+      - entity
+      - id
+      - name
+    EntityDataRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        code:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 255
+        administration:
+          type: integer
+        entity:
+          type: integer
+      required:
+      - administration
+      - entity
+      - name
+    EntityRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+      required:
+      - name
+    ForgotPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          minLength: 1
+          format: email
+      required:
+      - email
+    FormApproverResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormApproverUser'
+          readOnly: true
+        administration:
+          allOf:
+          - $ref: '#/components/schemas/CommonData'
+          readOnly: true
+      required:
+      - administration
+      - users
+    FormApproverUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 50
+        last_name:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 254
+      required:
+      - email
+      - first_name
+      - id
+      - last_name
+    FormData:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        question_group:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormDataQuestionGroup'
+          readOnly: true
+        approval_instructions:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        parent:
+          type: integer
+          nullable: true
+      required:
+      - id
+      - name
+      - question_group
+    FormDataAnswer:
+      type: object
+      properties:
+        id:
+          type: integer
+        value:
+          type: integer
+      required:
+      - id
+      - value
+    FormDataListQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        form:
+          type: integer
+        question_group:
+          type: integer
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        label:
+          type: string
+        short_label:
+          type: string
+          nullable: true
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        meta:
+          type: boolean
+        api:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/FormDataListQuestionTypeEnum'
+          readOnly: true
+        required:
+          type: boolean
+        rule:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        option:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListOption'
+          readOnly: true
+        dependency:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        dependency_rule:
+          nullable: true
+          description: 'Dependency evaluation rule: AND or OR. Defaults to AND in
+            client logic if not specified.'
+          oneOf:
+          - $ref: '#/components/schemas/DependencyRuleEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        display_only:
+          type: boolean
+          nullable: true
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormDataListQuestionAttributesEnum'
+          readOnly: true
+      required:
+      - attributes
+      - form
+      - id
+      - label
+      - option
+      - question_group
+      - type
+    FormDataListQuestionAttributesEnum:
+      enum:
+      - chart
+      - aggregate
+      - table
+      - jmp
+      - advanced_filter
+      type: string
+    FormDataListQuestionTypeEnum:
+      enum:
+      - geo
+      - administration
+      - text
+      - number
+      - option
+      - multiple_option
+      - cascade
+      - photo
+      - date
+      - autofield
+      - attachment
+      - signature
+      - input
+      type: string
+    FormDataQuestionGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        label:
+          type: string
+          nullable: true
+        name:
+          type: string
+          maxLength: 255
+        question:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormDataListQuestion'
+          readOnly: true
+        repeatable:
+          type: boolean
+          default: false
+        repeat_text:
+          type: string
+          nullable: true
+      required:
+      - id
+      - name
+      - question
+    FormDataStat:
+      type: object
+      properties:
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Option'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormDataAnswer'
+      required:
+      - data
+      - options
+    GenerateDownload:
+      type: object
+      properties:
+        task_id:
+          type: string
+        file_url:
+          type: string
+      required:
+      - file_url
+      - task_id
+    GeoFormat:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: float
+        lng:
+          type: number
+          format: float
+      required:
+      - lat
+      - lng
+    GeoLocationList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        geo:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        administration_id:
+          type: integer
+          readOnly: true
+      required:
+      - administration_id
+      - id
+      - name
+    HasPendingData:
+      type: object
+      properties:
+        id:
+          type: integer
+        created_by:
+          type: string
+      required:
+      - created_by
+      - id
+    ListAdministration:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        path:
+          type: string
+          nullable: true
+        parent:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        level_name:
+          type: string
+          readOnly: true
+        level:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          readOnly: true
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAdministrationChildren'
+          readOnly: true
+        children_level_name:
+          type: string
+          readOnly: true
+      required:
+      - children
+      - children_level_name
+      - full_name
+      - id
+      - level
+      - level_name
+      - name
+    ListAdministrationChildren:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        parent:
+          type: integer
+          nullable: true
+        path:
+          type: string
+          nullable: true
+        level:
+          type: integer
+        name:
+          type: string
+        full_name:
+          type: string
+          readOnly: true
+      required:
+      - full_name
+      - id
+      - level
+      - name
+    ListBatch:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        form:
+          allOf:
+          - $ref: '#/components/schemas/CommonData'
+          readOnly: true
+        administration:
+          allOf:
+          - $ref: '#/components/schemas/CommonData'
+          readOnly: true
+        file:
+          allOf:
+          - $ref: '#/components/schemas/BatchFile'
+          readOnly: true
+        total_data:
+          type: integer
+          readOnly: true
+        created:
+          type: string
+          format: date
+          readOnly: true
+        updated:
+          type: string
+          format: date
+          readOnly: true
+        status:
+          type: boolean
+          readOnly: true
+        approvers:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchApprover'
+          readOnly: true
+      required:
+      - administration
+      - approvers
+      - created
+      - file
+      - form
+      - id
+      - name
+      - status
+      - total_data
+      - updated
+    ListBatchComment:
+      type: object
+      properties:
+        user:
+          allOf:
+          - $ref: '#/components/schemas/BatchUserComment'
+          readOnly: true
+        comment:
+          type: string
+        file_path:
+          type: string
+          nullable: true
+          maxLength: 255
+        created:
+          type: string
+          format: date
+          readOnly: true
+      required:
+      - comment
+      - created
+      - user
+    ListBatchSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question:
+          type: string
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/ListBatchSummaryTypeEnum'
+          readOnly: true
+        value:
+          readOnly: true
+      required:
+      - id
+      - question
+      - type
+      - value
+    ListBatchSummaryTypeEnum:
+      enum:
+      - Geo
+      - Administration
+      - Text
+      - Number
+      - Option
+      - Multiple_Option
+      - Cascade
+      - Photo
+      - Date
+      - Autofield
+      - Attachment
+      - Signature
+      - Input
+      type: string
+    ListDataAnswer:
+      type: object
+      properties:
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerHistory'
+          readOnly: true
+        question:
+          type: integer
+        value:
+          readOnly: true
+        index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - history
+      - question
+      - value
+    ListDataBatch:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        form:
+          allOf:
+          - $ref: '#/components/schemas/CommonData'
+          readOnly: true
+        administration:
+          allOf:
+          - $ref: '#/components/schemas/CommonData'
+          readOnly: true
+        created_by:
+          type: string
+          readOnly: true
+        created:
+          type: string
+          readOnly: true
+        approver:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingBatchApprover'
+          readOnly: true
+        approved:
+          type: boolean
+        total_data:
+          type: integer
+          readOnly: true
+      required:
+      - administration
+      - approver
+      - created
+      - created_by
+      - form
+      - id
+      - name
+      - total_data
+    ListDataBatchResponse:
+      type: object
+      properties:
+        current:
+          type: integer
+        total:
+          type: integer
+        total_page:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListBatch'
+      required:
+      - current
+      - data
+      - total
+      - total_page
+    ListEntityData:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          nullable: true
+          maxLength: 255
+        name:
+          type: string
+      required:
+      - id
+      - name
+    ListForm:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        parent:
+          type: integer
+          nullable: true
+      required:
+      - id
+      - name
+    ListFormData:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        uuid:
+          type: string
+          nullable: true
+          maxLength: 255
+        name:
+          type: string
+        form:
+          type: integer
+        administration:
+          type: string
+          readOnly: true
+        geo:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        created_by:
+          type: string
+          readOnly: true
+        updated_by:
+          type: string
+          readOnly: true
+        created:
+          type: string
+          readOnly: true
+        updated:
+          type: string
+          readOnly: true
+        pending_data:
+          allOf:
+          - $ref: '#/components/schemas/HasPendingData'
+          readOnly: true
+        submitter:
+          type: string
+          nullable: true
+          maxLength: 255
+      required:
+      - administration
+      - created
+      - created_by
+      - form
+      - id
+      - name
+      - pending_data
+      - updated
+      - updated_by
+    ListLevel:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        level:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - id
+      - level
+      - name
+    ListOption:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        value:
+          type: string
+          nullable: true
+          maxLength: 255
+        label:
+          type: string
+          nullable: true
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        color:
+          type: string
+          nullable: true
+      required:
+      - id
+    ListPendingDataAnswer:
+      type: object
+      properties:
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerHistory'
+          readOnly: true
+        question:
+          type: integer
+        value:
+          readOnly: true
+        last_value:
+          readOnly: true
+        index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - history
+      - last_value
+      - question
+      - value
+    ListPendingFormData:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        uuid:
+          type: string
+          nullable: true
+          maxLength: 255
+        name:
+          type: string
+        form:
+          type: integer
+        administration:
+          type: string
+          readOnly: true
+        geo:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        submitter:
+          type: string
+          nullable: true
+          maxLength: 255
+        duration:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        created_by:
+          type: string
+          readOnly: true
+        created:
+          type: string
+          readOnly: true
+        answer_history:
+          type: boolean
+          readOnly: true
+        parent:
+          allOf:
+          - $ref: '#/components/schemas/ParentFormData'
+          readOnly: true
+      required:
+      - administration
+      - answer_history
+      - created
+      - created_by
+      - form
+      - id
+      - name
+      - parent
+    ListQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        label:
+          type: string
+        short_label:
+          type: string
+          nullable: true
+        type:
+          type: string
+          readOnly: true
+        required:
+          type: boolean
+        dependency:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        dependency_rule:
+          nullable: true
+          description: 'Dependency evaluation rule: AND or OR. Defaults to AND in
+            client logic if not specified.'
+          oneOf:
+          - $ref: '#/components/schemas/DependencyRuleEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        option:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListOption'
+          readOnly: true
+        center:
+          allOf:
+          - $ref: '#/components/schemas/GeoFormat'
+          readOnly: true
+        api:
+          allOf:
+          - $ref: '#/components/schemas/CascadeApiFormat'
+          readOnly: true
+        meta:
+          type: boolean
+        rule:
+          allOf:
+          - $ref: '#/components/schemas/QuestionRuleFormat'
+          readOnly: true
+        extra:
+          allOf:
+          - $ref: '#/components/schemas/QuestionExtraFormat'
+          readOnly: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/QuestionSourceFormat'
+          readOnly: true
+        tooltip:
+          allOf:
+          - $ref: '#/components/schemas/QuestionTooltipFormat'
+          readOnly: true
+        fn:
+          allOf:
+          - $ref: '#/components/schemas/QuestionFnFormat'
+          readOnly: true
+        pre:
+          allOf:
+          - $ref: '#/components/schemas/QuestionPreFormat'
+          readOnly: true
+        displayOnly:
+          type: boolean
+      required:
+      - api
+      - center
+      - displayOnly
+      - extra
+      - fn
+      - id
+      - label
+      - option
+      - pre
+      - rule
+      - source
+      - tooltip
+      - type
+    ListQuestionGroup:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        label:
+          type: string
+          nullable: true
+        question:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListQuestion'
+          readOnly: true
+        repeatable:
+          type: boolean
+        repeat_text:
+          type: string
+          nullable: true
+          maxLength: 255
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+      required:
+      - name
+      - question
+    ListUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 50
+        last_name:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          readOnly: true
+        organisation:
+          allOf:
+          - $ref: '#/components/schemas/Organisation'
+          readOnly: true
+        trained:
+          type: boolean
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 15
+        invite:
+          type: string
+          readOnly: true
+        forms:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserForm'
+          readOnly: true
+        last_login:
+          type: integer
+          readOnly: true
+      required:
+      - email
+      - first_name
+      - forms
+      - id
+      - invite
+      - last_login
+      - last_name
+      - organisation
+      - roles
+      - trained
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          minLength: 1
+          format: email
+        password:
+          type: string
+          minLength: 1
+      required:
+      - email
+      - password
+    MobileAssignment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        passcode:
+          type: string
+          readOnly: true
+        forms:
+          type: array
+          items:
+            type: integer
+        administrations:
+          type: array
+          items:
+            type: integer
+        created_by:
+          type: string
+          format: email
+          readOnly: true
+      required:
+      - administrations
+      - created_by
+      - forms
+      - id
+      - passcode
+    MobileAssignmentForms:
+      type: object
+      properties:
+        name:
+          type: string
+          readOnly: true
+        syncToken:
+          type: string
+          readOnly: true
+        formsUrl:
+          type: array
+          items:
+            $ref: '#/components/schemas/MobileForm'
+          readOnly: true
+      required:
+      - formsUrl
+      - name
+      - syncToken
+    MobileAssignmentFormsRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 255
+      required:
+      - code
+    MobileAssignmentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          maxLength: 255
+        forms:
+          type: array
+          items:
+            type: integer
+        administrations:
+          type: array
+          items:
+            type: integer
+      required:
+      - administrations
+      - forms
+    MobileDataPointDownloadList:
+      type: object
+      properties:
+        id:
+          type: integer
+        form_id:
+          type: integer
+        name:
+          type: string
+        administration_id:
+          type: integer
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        last_updated:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - administration_id
+      - form_id
+      - id
+      - last_updated
+      - name
+      - url
+    MobileDeviceDownloadDatapointListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MobileDataPointDownloadList'
+        page:
+          type: integer
+        current:
+          type: integer
+      required:
+      - current
+      - data
+      - page
+      - total
+    MobileForm:
+      type: object
+      properties:
+        id:
+          type: integer
+        version:
+          type: string
+        parentId:
+          type: integer
+          nullable: true
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
+      required:
+      - id
+      - parentId
+      - url
+      - version
+    MonitoringStat:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        value:
+          type: number
+          format: float
+      required:
+      - date
+      - value
+    NullEnum:
+      enum:
+      - null
+    Option:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        label:
+          type: string
+          nullable: true
+        color:
+          type: string
+          nullable: true
+      required:
+      - id
+    Organisation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+      required:
+      - id
+      - name
+    OrganisationAttribute:
+      type: object
+      properties:
+        type_id:
+          allOf:
+          - $ref: '#/components/schemas/TypeIdEnum'
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+      required:
+      - name
+      - type_id
+    OrganisationAttributeChildren:
+      type: object
+      properties:
+        type_id:
+          allOf:
+          - $ref: '#/components/schemas/TypeIdEnum'
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Organisation'
+          readOnly: true
+      required:
+      - children
+      - name
+      - type_id
+    OrganisationList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganisationAttribute'
+          readOnly: true
+        users:
+          type: integer
+      required:
+      - attributes
+      - id
+      - name
+      - users
+    PaginatedAdministrationList:
+      type: object
+      properties:
+        current:
+          type: integer
+          example: 123
+        total:
+          type: integer
+          example: 123
+        total_page:
+          type: integer
+          example: 123
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Administration'
+    PaginatedDraftFormDataList:
+      type: object
+      properties:
+        current:
+          type: integer
+          example: 123
+        total:
+          type: integer
+          example: 123
+        total_page:
+          type: integer
+          example: 123
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DraftFormData'
+    PaginatedEntityDataList:
+      type: object
+      properties:
+        current:
+          type: integer
+          example: 123
+        total:
+          type: integer
+          example: 123
+        total_page:
+          type: integer
+          example: 123
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityData'
+    PaginatedEntityList:
+      type: object
+      properties:
+        current:
+          type: integer
+          example: 123
+        total:
+          type: integer
+          example: 123
+        total_page:
+          type: integer
+          example: 123
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+    PaginatedMobileAssignmentList:
+      type: object
+      properties:
+        current:
+          type: integer
+          example: 123
+        total:
+          type: integer
+          example: 123
+        total_page:
+          type: integer
+          example: 123
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MobileAssignment'
+    PaginatedRoleDetailList:
+      type: object
+      properties:
+        current:
+          type: integer
+          example: 123
+        total:
+          type: integer
+          example: 123
+        total_page:
+          type: integer
+          example: 123
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleDetail'
+    ParentFormData:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        form:
+          type: integer
+        is_pending:
+          type: boolean
+      required:
+      - form
+      - id
+      - name
+    PendingBatchApprover:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        administration_level:
+          type: string
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PendingBatchApproverStatusEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+        status_text:
+          type: string
+          readOnly: true
+        allow_approve:
+          type: boolean
+          readOnly: true
+      required:
+      - administration_level
+      - allow_approve
+      - id
+      - name
+      - status_text
+    PendingBatchApproverStatusEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      type: integer
+    PendingDataListResponse:
+      type: object
+      properties:
+        current:
+          type: integer
+        total:
+          type: integer
+        total_page:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListPendingFormData'
+      required:
+      - current
+      - data
+      - total
+      - total_page
+    QuestionExtraFormat:
+      type: object
+      properties:
+        allowOther:
+          type: boolean
+      required:
+      - allowOther
+    QuestionFnFormat:
+      type: object
+      properties:
+        fnColor:
+          type: object
+          additionalProperties: {}
+        fnString:
+          type: string
+        multiline:
+          type: boolean
+      required:
+      - fnColor
+      - fnString
+      - multiline
+    QuestionPreFormat:
+      type: object
+      properties:
+        answer:
+          type: string
+        fill:
+          type: object
+          additionalProperties: {}
+      required:
+      - answer
+      - fill
+    QuestionRuleFormat:
+      type: object
+      properties:
+        min:
+          type: number
+          format: float
+        max:
+          type: number
+          format: float
+        allowDecimal:
+          type: boolean
+      required:
+      - allowDecimal
+      - max
+      - min
+    QuestionSourceFormat:
+      type: object
+      properties:
+        file:
+          type: string
+        parent:
+          type: array
+          items:
+            type: integer
+        max_level:
+          type: integer
+      required:
+      - file
+      - max_level
+      - parent
+    QuestionTooltipFormat:
+      type: object
+      properties:
+        text:
+          type: string
+      required:
+      - text
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        role_access_list:
+          type: string
+          readOnly: true
+          description: List of data access types for this role
+        role_features_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleFeature'
+          readOnly: true
+          description: List of features and their access levels for this role
+        administration_level:
+          type: integer
+      required:
+      - administration_level
+      - id
+      - name
+      - role_access_list
+      - role_features_list
+    RoleAccessEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      type: integer
+    RoleDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        administration_level:
+          allOf:
+          - $ref: '#/components/schemas/AdministrationLevels'
+          readOnly: true
+        role_access:
+          type: string
+          readOnly: true
+        role_features:
+          type: string
+          readOnly: true
+        total_users:
+          type: string
+          readOnly: true
+      required:
+      - administration_level
+      - id
+      - name
+      - role_access
+      - role_features
+      - total_users
+    RoleFeature:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type080Enum'
+          minimum: -2147483648
+          maximum: 2147483647
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AccessEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+      required:
+      - access
+      - id
+      - type
+    RoleFeatureItem:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type080Enum'
+          description: Type of the feature
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AccessEnum'
+          description: Access level for the feature
+      required:
+      - access
+      - type
+    RoleFeatureItemRequest:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type080Enum'
+          description: Type of the feature
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AccessEnum'
+          description: Access level for the feature
+      required:
+      - access
+      - type
+    RoleFeatureRequest:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/Type080Enum'
+          minimum: -2147483648
+          maximum: 2147483647
+        access:
+          allOf:
+          - $ref: '#/components/schemas/AccessEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+      required:
+      - access
+      - type
+    RoleOption:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: integer
+        level:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          readOnly: true
+        administration_level:
+          type: integer
+      required:
+      - administration_level
+      - label
+      - level
+      - value
+    RoleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        role_access:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleAccessEnum'
+          writeOnly: true
+        role_features:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleFeatureItemRequest'
+          writeOnly: true
+          default: []
+          description: List of features and their access levels for this role
+        administration_level:
+          type: integer
+      required:
+      - administration_level
+      - name
+      - role_access
+    SetUserPasswordRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 1
+        confirm_password:
+          type: string
+          minLength: 1
+        invite:
+          type: string
+          minLength: 1
+      required:
+      - confirm_password
+      - invite
+      - password
+    StatusD0cEnum:
+      enum:
+      - pending
+      - on_progress
+      - failed
+      - done
+      type: string
+    SubmitFormDataAnswerRequest:
+      type: object
+      properties:
+        question:
+          type: integer
+        value:
+          type: string
+        index:
+          type: integer
+      required:
+      - question
+      - value
+    SubmitFormDataRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        geo:
+          type: array
+          items: {}
+          nullable: true
+        administration:
+          type: integer
+        submitter:
+          type: string
+          minLength: 1
+        duration:
+          type: integer
+        uuid:
+          type: string
+          minLength: 1
+      required:
+      - administration
+      - name
+    SubmitFormRequest:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SubmitFormDataRequest'
+        answer:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubmitFormDataAnswerRequest'
+      required:
+      - answer
+      - data
+    SubmitPendingFormRequest:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SubmitFormDataRequest'
+        answer:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubmitFormDataAnswerRequest'
+      required:
+      - answer
+      - data
+    SubmitUpdateDraftFormRequest:
+      type: object
+      description: Serializer for updating existing draft form data.
+      properties:
+        data:
+          $ref: '#/components/schemas/SubmitFormDataRequest'
+        answer:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubmitFormDataAnswerRequest'
+      required:
+      - answer
+      - data
+    SyncDeviceFormDataRequest:
+      type: object
+      properties:
+        formId:
+          type: integer
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        duration:
+          type: integer
+          maximum: 86400000
+          minimum: 0
+          default: 0
+        submittedAt:
+          type: string
+          format: date-time
+        geo:
+          type: array
+          items:
+            type: integer
+        uuid:
+          type: string
+          format: uuid
+          nullable: true
+        answers:
+          type: object
+          additionalProperties: {}
+      required:
+      - answers
+      - formId
+      - geo
+      - name
+      - submittedAt
+    Type080Enum:
+      enum:
+      - 1
+      type: integer
+    TypeB59Enum:
+      enum:
+      - value
+      - option
+      - multiple_option
+      - aggregate
+      type: string
+    TypeFbdEnum:
+      enum:
+      - send_email
+      - validate_data
+      - seed_data
+      - download
+      - download_administration
+      - download_entities
+      - download_datapoint_report
+      type: string
+    TypeIdEnum:
+      enum:
+      - 1
+      - 2
+      type: integer
+    UpdateProfileRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          minLength: 1
+          format: email
+        first_name:
+          type: string
+          minLength: 1
+        last_name:
+          type: string
+          minLength: 1
+        phone_number:
+          type: string
+          minLength: 1
+        organisation:
+          type: integer
+    UploadAPKFileRequest:
+      type: object
+      properties:
+        apk_url:
+          type: string
+          format: binary
+        apk_version:
+          type: string
+          minLength: 1
+        secret:
+          type: string
+          minLength: 1
+      required:
+      - apk_url
+      - apk_version
+      - secret
+    UploadAttachments:
+      type: object
+      properties:
+        message:
+          type: string
+        file:
+          type: string
+      required:
+      - file
+      - message
+    UploadAttachmentsFromDevice:
+      type: object
+      properties:
+        message:
+          type: string
+        file:
+          type: string
+      required:
+      - file
+      - message
+    UploadExcel:
+      type: object
+      properties:
+        task_id:
+          type: string
+      required:
+      - task_id
+    UploadExcelRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          pattern: (?:xlsx)$
+        is_update:
+          type: boolean
+          default: false
+      required:
+      - file
+    UploadImages:
+      type: object
+      properties:
+        task_id:
+          type: string
+      required:
+      - task_id
+    UploadImagesFromDevice:
+      type: object
+      properties:
+        message:
+          type: string
+        file:
+          type: string
+      required:
+      - file
+      - message
+    UploadImagesRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          pattern: (?:jpg|png|jpeg)$
+      required:
+      - file
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        name:
+          type: string
+          readOnly: true
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRoleList'
+          readOnly: true
+        trained:
+          type: boolean
+          default: false
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 15
+        forms:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserForm'
+          readOnly: true
+        organisation:
+          allOf:
+          - $ref: '#/components/schemas/Organisation'
+          readOnly: true
+        last_login:
+          type: integer
+          readOnly: true
+        passcode:
+          type: string
+          readOnly: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        administration:
+          allOf:
+          - $ref: '#/components/schemas/UserAdministration'
+          readOnly: true
+        id:
+          type: integer
+          readOnly: true
+      required:
+      - administration
+      - email
+      - forms
+      - id
+      - last_login
+      - name
+      - organisation
+      - passcode
+      - roles
+    UserAdministration:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        level:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          readOnly: true
+        level_id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+      required:
+      - full_name
+      - id
+      - level
+      - level_id
+      - name
+    UserDetail:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 50
+        last_name:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRoleEdit'
+          readOnly: true
+        organisation:
+          allOf:
+          - $ref: '#/components/schemas/Organisation'
+          readOnly: true
+        trained:
+          type: boolean
+          default: false
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 15
+        forms:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserForm'
+          readOnly: true
+        pending_approval:
+          type: integer
+          readOnly: true
+        data:
+          type: integer
+          readOnly: true
+        pending_batch:
+          type: integer
+          readOnly: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+      required:
+      - data
+      - email
+      - first_name
+      - forms
+      - last_name
+      - organisation
+      - pending_approval
+      - pending_batch
+      - roles
+    UserForm:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - name
+    UserList:
+      type: object
+      properties:
+        current:
+          type: integer
+        total:
+          type: integer
+        total_page:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListUser'
+      required:
+      - current
+      - data
+      - total
+      - total_page
+    UserRole:
+      type: object
+      properties:
+        role:
+          type: string
+        administration:
+          type: string
+      required:
+      - administration
+      - role
+    UserRoleEdit:
+      type: object
+      properties:
+        role:
+          type: integer
+        administration:
+          type: integer
+        adm_path:
+          readOnly: true
+      required:
+      - adm_path
+      - administration
+      - role
+    UserRoleList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        role:
+          type: string
+        administration:
+          allOf:
+          - $ref: '#/components/schemas/UserAdministration'
+          readOnly: true
+        is_approver:
+          type: string
+          readOnly: true
+        is_submitter:
+          type: string
+          readOnly: true
+        is_editor:
+          type: string
+          readOnly: true
+        can_delete:
+          type: string
+          readOnly: true
+        can_invite_user:
+          type: string
+          readOnly: true
+      required:
+      - administration
+      - can_delete
+      - can_invite_user
+      - id
+      - is_approver
+      - is_editor
+      - is_submitter
+      - role
+    WebFormDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        cascades:
+          type: array
+          items: {}
+          readOnly: true
+        approval_instructions:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        parent:
+          type: integer
+          nullable: true
+        question_group:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListQuestionGroup'
+          readOnly: true
+      required:
+      - cascades
+      - id
+      - name
+      - question_group
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
