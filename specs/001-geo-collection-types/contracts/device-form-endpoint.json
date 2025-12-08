@@ -1,0 +1,245 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Device Form Endpoint - GeoTrace/GeoShape Support",
+    "version": "1.0.0",
+    "description": "Extended form definition endpoint to support geotrace and geoshape question types"
+  },
+  "paths": {
+    "/api/v1/device/form/{form_id}": {
+      "get": {
+        "operationId": "v1_device_form_retrieve",
+        "summary": "Get form definition with geotrace and geoshape question types",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "form_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Form identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Form definition retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormDefinition"
+                },
+                "examples": {
+                  "form_with_geo_types": {
+                    "value": {
+                      "id": 1749611049520,
+                      "form": "Wastewater Pump Station",
+                      "description": "Wastewater Pump Station - Registration",
+                      "defaultLanguage": "en",
+                      "languages": ["en"],
+                      "version": 1,
+                      "type": 1,
+                      "question_groups": [
+                        {
+                          "id": 1749611049540,
+                          "name": "registration",
+                          "label": "Registration",
+                          "order": 1,
+                          "repeatable": false,
+                          "questions": [
+                            {
+                              "id": 1749611742881,
+                              "name": "gps_location",
+                              "label": "GPS Location",
+                              "order": 3,
+                              "type": "geo",
+                              "required": true,
+                              "meta": true
+                            },
+                            {
+                              "id": 1749612000000,
+                              "name": "nearest_pump_station_route",
+                              "label": "Nearest Pump Station Route",
+                              "order": 5,
+                              "type": "geotrace",
+                              "required": false,
+                              "meta": false
+                            },
+                            {
+                              "id": 1749612100000,
+                              "name": "pump_station_area",
+                              "label": "Pump Station Area",
+                              "order": 6,
+                              "type": "geoshape",
+                              "required": false,
+                              "meta": false
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FormDefinition": {
+        "type": "object",
+        "required": ["id", "form", "version", "question_groups"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique form identifier"
+          },
+          "form": {
+            "type": "string",
+            "description": "Form name"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultLanguage": {
+            "type": "string",
+            "default": "en"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "version": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "integer",
+            "description": "Form type (1=registration, 2=monitoring)"
+          },
+          "question_groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionGroup"
+            }
+          }
+        }
+      },
+      "QuestionGroup": {
+        "type": "object",
+        "required": ["id", "name", "order", "questions"],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer"
+          },
+          "repeatable": {
+            "type": "boolean",
+            "default": false
+          },
+          "repeat_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Question"
+            }
+          }
+        }
+      },
+      "Question": {
+        "type": "object",
+        "required": ["id", "name", "label", "order", "type", "required", "meta"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique question identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Question field name (used as key in answers)"
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "number",
+              "date",
+              "photo",
+              "geo",
+              "geotrace",
+              "geoshape",
+              "option",
+              "multiple_option",
+              "cascade",
+              "autofield",
+              "attachment",
+              "signature"
+            ],
+            "description": "Question type - extended with geotrace and geoshape"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "meta": {
+            "type": "boolean",
+            "description": "Whether question contributes to datapoint metadata"
+          },
+          "options": {
+            "type": "array",
+            "items": {},
+            "nullable": true
+          },
+          "dependency": {
+            "type": "object",
+            "nullable": true,
+            "description": "Conditional display rules"
+          },
+          "tooltip": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

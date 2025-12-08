@@ -1,0 +1,230 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Device Sync Endpoint - GeoTrace/GeoShape Submission",
+    "version": "1.0.0",
+    "description": "Form submission endpoint supporting geotrace and geoshape answer types"
+  },
+  "paths": {
+    "/api/v1/device/sync": {
+      "post": {
+        "operationId": "v1_device_sync_create",
+        "summary": "Submit form data with geotrace and geoshape answers",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Optional submission ID for updates"
+          },
+          {
+            "in": "query",
+            "name": "is_draft",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_published",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncDeviceFormDataRequest"
+              },
+              "examples": {
+                "submission_with_geo_types": {
+                  "value": {
+                    "formId": 1749611049520,
+                    "name": "Pump Station Route Survey - Central Station",
+                    "duration": 450,
+                    "submittedAt": "2025-12-08T10:15:30Z",
+                    "geo": [-1.2921, 36.8219],
+                    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                    "answers": {
+                      "1749611657406": "Central Pump Station",
+                      "1749611049541": [123, 456],
+                      "1749611742881": [-1.2921, 36.8219],
+                      "1749612000000": [
+                        [-1.2921, 36.8219],
+                        [-1.2923, 36.8222],
+                        [-1.2925, 36.8225],
+                        [-1.2928, 36.8230],
+                        [-1.2930, 36.8235]
+                      ],
+                      "1749612100000": [
+                        [-1.2921, 36.8219],
+                        [-1.2925, 36.8225],
+                        [-1.2925, 36.8219],
+                        [-1.2923, 36.8217],
+                        [-1.2921, 36.8219]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "message": "Data submitted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultResponse"
+                },
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "message": "GeoTrace requires at least 2 coordinate pairs"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SyncDeviceFormDataRequest": {
+        "type": "object",
+        "required": ["formId", "name", "submittedAt", "geo", "answers"],
+        "properties": {
+          "formId": {
+            "type": "integer",
+            "description": "Form identifier"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Datapoint display name"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 86400000,
+            "default": 0,
+            "description": "Survey duration in seconds"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 submission datetime"
+          },
+          "geo": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Representative geographic point [latitude, longitude]",
+            "example": [-1.2921, 36.8219]
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Optional client-generated UUID"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Question answers keyed by question ID. GeoTrace and GeoShape answers are arrays of [latitude, longitude] coordinate pairs."
+          }
+        }
+      },
+      "GeoTraceAnswer": {
+        "type": "array",
+        "description": "Array of coordinate pairs representing a path or line",
+        "items": {
+          "$ref": "#/components/schemas/CoordinatePair"
+        },
+        "minItems": 2,
+        "example": [
+          [-1.2921, 36.8219],
+          [-1.2923, 36.8222],
+          [-1.2925, 36.8225]
+        ]
+      },
+      "GeoShapeAnswer": {
+        "type": "array",
+        "description": "Array of coordinate pairs representing a closed polygon. First and last coordinates must be identical.",
+        "items": {
+          "$ref": "#/components/schemas/CoordinatePair"
+        },
+        "minItems": 4,
+        "example": [
+          [-1.2921, 36.8219],
+          [-1.2925, 36.8225],
+          [-1.2925, 36.8219],
+          [-1.2921, 36.8219]
+        ]
+      },
+      "CoordinatePair": {
+        "type": "array",
+        "description": "Geographic coordinate as [latitude, longitude] pair",
+        "items": {
+          "type": "number"
+        },
+        "minItems": 2,
+        "maxItems": 2,
+        "example": [-1.2921, 36.8219]
+      },
+      "DefaultResponse": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
